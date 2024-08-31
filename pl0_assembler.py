@@ -20,15 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-
+
 import pl0_machine
 import sys
-import StringIO
 import re
 
-label_re = re.compile('\s*(.*?):')
-whitespace_re = re.compile('\s+')
-comment_re = re.compile('^\s*#.*$')
+label_re = re.compile('\\s*(.*?):')
+whitespace_re = re.compile('\\s+')
+comment_re = re.compile('^\\s*#.*$')
+
 
 def is_integer(string):
     try:
@@ -36,7 +36,8 @@ def is_integer(string):
     except ValueError:
         return False
     return True
-
+
+
 def assemble(input):
     buffer = []
     labels = {}
@@ -59,7 +60,7 @@ def assemble(input):
             for argument in command:
                 if is_integer(argument):
                     buffer.append(int(argument))
-                elif pl0_machine.OPCODES.has_key(argument):
+                elif argument in pl0_machine.OPCODES:
                     buffer.append(pl0_machine.OPCODES[argument])
                 else:
                     # A label
@@ -67,7 +68,8 @@ def assemble(input):
 
     # This updates any indirect labels
     return list(labels.get(x, x) for x in buffer)
-
+
+
 if __name__ == '__main__':
     code = assemble(sys.stdin)
-    print `code`
+    print(repr(code))

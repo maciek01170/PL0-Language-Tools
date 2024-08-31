@@ -12,7 +12,7 @@ BEGIN
     
     WHILE count <= K DO
     BEGIN
-        ! k;
+        PRINT k;
         
         k := n;
         n := m + n;

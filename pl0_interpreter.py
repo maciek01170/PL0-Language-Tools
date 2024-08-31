@@ -20,20 +20,22 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-
+
 import os
 import sys
-import StringIO
+from io import StringIO
 import pl0_parser
 from pl0_node_visitor import StackingNodeVisitor
-
+
+
 class Procedure:
 
     def __init__(self, name, node, block):
         self.name = name
         self.node = node
         self.block = block
-
+
+
 class Interpreter(StackingNodeVisitor):
 
     def evaluate(self, node):
@@ -41,7 +43,6 @@ class Interpreter(StackingNodeVisitor):
         result = self.visit_node(node)
         return [self.pop(), result]
 
-
     def accept_variables(self, *node):
         for var in node[1:]:
             self.stack[-1].update(var[1], 0)
@@ -60,7 +61,7 @@ class Interpreter(StackingNodeVisitor):
 
         defined, value, level = self.find(name)
         self.stack[level].update(name, result)
-
+
     def accept_while(self, *node):
         condition = node[1]
         loop = node[2]
@@ -81,7 +82,7 @@ class Interpreter(StackingNodeVisitor):
 
         if result:
             self.evaluate(body)
-
+
     def accept_odd(self, nid, expr):
         block, result = self.evaluate(expr)
         return result % 2 != 0
@@ -103,7 +104,7 @@ class Interpreter(StackingNodeVisitor):
             return lhs[1] == rhs[1]
 
         raise ArithmeticError("Unknown comparison operator " + operator)
-
+
     def accept_number(self, *node):
         return node[1]
 
@@ -111,7 +112,7 @@ class Interpreter(StackingNodeVisitor):
         defined, value, level = self.find(node[1])
 
         return value
-
+
     def accept_call(self, *node):
         defined, value, level = self.find(node[1])
 
@@ -120,7 +121,7 @@ class Interpreter(StackingNodeVisitor):
 
         block, result = self.evaluate(value.node)
         return result
-
+
     def accept_term(self, *node):
         block, total = self.evaluate(node[1])
 
@@ -133,7 +134,7 @@ class Interpreter(StackingNodeVisitor):
                 total = total / result
 
         return total
-
+
     def accept_expression(self, *node):
         block, total = self.evaluate(node[2])
 
@@ -146,15 +147,16 @@ class Interpreter(StackingNodeVisitor):
                 total = total - result
 
         if node[1] == 'MINUS':
-            total = total * -1;
+            total = total * -1
 
         return total
 
     def accept_print(self, *node):
         block, result = self.evaluate(node[1])
 
-        print `result`
-
+        print(repr(result))
+
+
 if __name__ == '__main__':
     code = sys.stdin.read()
     parser = pl0_parser.Parser()

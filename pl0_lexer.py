@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-
+
 import sys
 import ply.lex as lex
-
+
 # program = block "." .
 #
 # block = [ "const" ident "=" number {"," ident "=" number} ";"]
@@ -43,7 +43,7 @@ import ply.lex as lex
 # term = factor {("*"|"/") factor}.
 #
 # factor = ident | number | "(" expression ")".
-
+
 keywords = [
     'ODD', 'CALL', 'BEGIN', 'END', 'IF', 'THEN', 'WHILE', 'DO', 'CONST', 'VAR', 'PROCEDURE', 'WRITE', 'WRITELN'
 ]
@@ -58,25 +58,28 @@ tokens = keywords + [
 ]
 
 t_ignore = ' \t'
-
+
+
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
-
     if t.value.upper() in keywords:
         t.value = t.value.upper()
         t.type = t.value
 
     return t
 
+
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+
 
 def t_COMMENT(t):
     r'\#.*'
     # No return value. Token discarded
     pass
-
+
+
 t_DOT = r'\.'
 t_EOS = r';'
 
@@ -101,6 +104,7 @@ t_DIVIDE = r'/'
 t_ASSIGN = r'='
 t_PRINT = r'!'
 
+
 def t_NUMBER(t):
     r'\d+'
 
@@ -108,24 +112,28 @@ def t_NUMBER(t):
 
     return t
 
+
 # Error handling rule
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
 
+
 # Build the lexer
 lexer = lex.lex()
-
+
+
 def create():
     return lexer.clone()
+
 
 if __name__ == "__main__":
     code = sys.stdin.read()
 
-    lex.input(code)
+    lexer.input(code)
 
     while True:
-        tok = lex.token()
+        tok = lexer.token()
         if not tok: break
 
         print(tok)
